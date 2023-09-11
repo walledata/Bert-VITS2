@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
      这是一个具体的例子：
 
-     `/root/my_dataset/迪奥娜/114514.wav|迪奥娜|ZH|哼哼，快快开始激动人心的新人对局吧！`
+     `/root/my_dataset/diona/114514.wav|diona|ZH|哼哼，快快开始激动人心的新人对局吧！`
 
 2. 执行脚本`preprocess_text.py`对`filelist/genshin.list`做预处理：
 
@@ -33,11 +33,11 @@ pip install -r requirements.txt
    python preprocess_text.py
    ```
 
-   这一步会在目录`filelists`生成中间文件`genshin.list.cleaned`以及用于模型训练评估的`train.list`和`val.list`
+   这一步会在目录`filelists`生成中间文件`genshin.list.cleaned`以及用于模型训练评估的`train.list`和`val.list`，同时会根据数据集中实际的角色修改`configs/config.json`中的`spk2id`字段
 
 ## 4. 准备底模
 
-下载底模：[Stardust_minus/Bert-VITS2 - Bert-VITS2 - OpenI - 启智AI开源社区提供普惠算力！ (pcl.ac.cn)](https://openi.pcl.ac.cn/Stardust_minus/Bert-VITS2/modelmanage/model_filelist_tmpl?name=Bert-VITS2底模)
+下载底模：[Stardust_minus/Bert-VITS2 - Bert-VITS2 - OpenI - 启智AI开源社区提供普惠算力！ (pcl.ac.cn)](https://openi.pcl.ac.cn/Stardust_minus/Bert-VITS2/modelmanage/model_filelist_tmpl?name=Bert-VITS2底模)，在`logs`下新建目录`<speaker_name>`将下载好的模型权重文件放入其中
 
 ## 5. 下载BERT模型权重
 
@@ -54,14 +54,19 @@ python bert_gen.py
 ## 7. 开始训练
 
 ```shell
-python train_ms.py -c configs/config.json -m <path/to/base_models>
+python train_ms.py -c configs/config.json -m <speaker_name>
 ```
 
-其中`<path/to/base_models>`为第四步中保存底模的路径。训练过程中默认每1000步保存一次checkpoint，保存路径为`logs/<base_models_folder_name>/*.pth`
+其中`<speaker_name>`为第四步中保存底模的目录名。训练过程中默认每1000步保存一次checkpoint，保存路径为`logs/<speaker_name>/*.pth`
 
 ## 8. Web UI，启动！
 
 ```shell
-python webui.py --model logs/<base_models_folder_name>/G_xxx.pth
+python webui.py --model logs/<speaker_name>/G_xxx.pth
 ```
 
+## References
+
+* 原始Repo: [Stardust-minus/Bert-VITS2: vits2 backbone with bert (github.com)](https://github.com/Stardust-minus/Bert-VITS2)
+* [YYuX-1145/Bert-VITS2-Integration-package: vits2 backbone with bert (github.com)](https://github.com/YYuX-1145/Bert-VITS2-Integration-package/tree/main)
+* [Bert-Vits2 手把手本地部署录屏教程_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV18N4y1Q7JK/?spm_id_from=333.999.0.0)
